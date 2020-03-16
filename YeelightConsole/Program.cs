@@ -1,21 +1,36 @@
+using Mono.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using YeelightAPI;
 
 namespace YeelightConsole
 {
     class Program
     {
-        static void Main(string[] args)
-        {
-            // The code provided will print ‘Hello World’ to the console.
-            // Press Ctrl+F5 (or go to Debug > Start Without Debugging) to run your app.
-            Console.WriteLine("Hello World!");
-            Console.ReadKey();
+        static List<string> _args = new List<string>() { "power" };
 
-            // Go to http://aka.ms/dotnet-get-started-console to continue learning how to build a console app! 
+        public static void Main(string[] args)
+        {
+            MainAsync(args).GetAwaiter().GetResult();
         }
+
+        private static async Task MainAsync(string[] args)
+        {
+            if (_args.Contains(args[0]))
+            {
+                await pAsync();
+            }
+        }
+
+        static async Task pAsync()
+        {
+            List<Device> devices = await DeviceLocator.Discover();
+            await devices[0].Connect();
+            await devices[0].Toggle();
+        }
+        
     }
 }
