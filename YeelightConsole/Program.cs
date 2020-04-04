@@ -1,8 +1,5 @@
-using Mono.Options;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using YeelightAPI;
 
@@ -19,18 +16,39 @@ namespace YeelightConsole
 
         private static async Task MainAsync(string[] args)
         {
-            if (_args.Contains(args[0]))
+            Device device = await Connect();
+
+            if (device != null)
             {
-                await pAsync();
+                if (_args.Contains(args[0]))
+                {
+                    await TurnOn(device);
+                }
+            }
+            else
+            {
+                Console.Out.WriteLine("Could not connect. Is light turned off?");
+                Console.ReadKey();
             }
         }
 
-        static async Task pAsync()
+        static async Task<Device> Connect()
         {
             List<Device> devices = await DeviceLocator.Discover();
-            await devices[0].Connect();
-            await devices[0].Toggle();
+
+            if (devices.Count > 0)
+            {
+                await devices[0].Connect();
+
+                return devices[0];
+            }
+
+            return null;
         }
-        
+
+        static async Task TurnOn(Device device)
+        {
+            await device.Toggle();
+        }
     }
 }
